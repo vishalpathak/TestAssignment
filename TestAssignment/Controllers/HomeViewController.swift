@@ -16,28 +16,27 @@ class HomeViewController: UIViewController {
         tb.delegate = self
         tb.dataSource = self
         tb.translatesAutoresizingMaskIntoConstraints = false
-        tb.register(UITableViewCell.self, forCellReuseIdentifier: cellId)
+        tb.register(HomeInfoTableViewCell.self, forCellReuseIdentifier: cellId)
         return tb
     }()
 
     var activity = UIActivityIndicatorView()
     
     //MARK:- Data Variables
-    var arrayInfoList = ["a", "b", "c", "d"]
+    var arrayInfoList = [DataInfoViewModel]()
     var fetchError: Error?
     var updateTable = false
     
     //MARK:- View Life cycle functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        //arrayInfoList = ["a", "b", "c", "d"]
         setUpUIForViews()
     }
     
     //MARK:- Set UI for views
     func setUpUIForViews() -> Void {
-//        let refresh = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.refresh, target: self, action: #selector(fetchDataFromAPI))
-//        self.navigationItem.rightBarButtonItem  = refresh
+        let refresh = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.refresh, target: self, action: #selector(fetchDataFromAPI))
+        self.navigationItem.rightBarButtonItem  = refresh
     
         view.backgroundColor = .white
         view.addSubview(tableInfoList)
@@ -52,6 +51,9 @@ class HomeViewController: UIViewController {
         constraints =  NSLayoutConstraint.constraints(withVisualFormat: stringConstraint, options: NSLayoutConstraint.FormatOptions.alignAllCenterX, metrics: nil, views: views)
         self.view.addConstraints(constraints)
     }
+    //MARK:- Fetch Data from API, assign to array, Delegate is called for 
+    @objc func fetchDataFromAPI() {
+    }
 }
 
 extension HomeViewController:UITableViewDelegate,UITableViewDataSource{
@@ -61,11 +63,13 @@ extension HomeViewController:UITableViewDelegate,UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableInfoList.dequeueReusableCell(withIdentifier: cellId) 
+        let cell = tableInfoList.dequeueReusableCell(withIdentifier: cellId) as! HomeInfoTableViewCell
         let obj = arrayInfoList[indexPath.row]
-        cell?.textLabel?.text = obj
-        cell?.textLabel?.textColor = .black
-        return cell!
+//        cell.dataInfoModel = obj
+//        if indexPath.row == arrayInfoList.count - 1 && updateTable == false{
+//            updateTableView()
+//        }
+        return cell
     }
     
 }
