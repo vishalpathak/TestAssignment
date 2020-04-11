@@ -7,6 +7,9 @@ target 'TestAssignment' do
 
   # Pods for TestAssignment
 
+pod 'Kingfisher', '~> 5.0'
+
+
   target 'TestAssignmentTests' do
     inherit! :search_paths
     # Pods for testing
