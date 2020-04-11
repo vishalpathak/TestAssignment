@@ -6,4 +6,9 @@
 //  Copyright © 2020 Vishal. All rights reserved.
 //
 
-import Foundation
+import UIKit
+import Kingfisher
+
+class HomeInfoTableViewCell: UITableViewCell {
+    
+}
