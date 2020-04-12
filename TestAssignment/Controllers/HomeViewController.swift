@@ -58,7 +58,7 @@ class HomeViewController: UIViewController {
         objData.fetchDataFromApi(urlAPI: BaseUrlPath)
     }
 }
-
+//MARK:- TableView Functions
 extension HomeViewController:UITableViewDelegate,UITableViewDataSource{
     
    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -76,8 +76,29 @@ extension HomeViewController:UITableViewDelegate,UITableViewDataSource{
     }
     
 }
+//MARK:- API data fetch function
 extension HomeViewController: DataReceivedDelegate{
     func didGetDataFromAPI(rowViewModel: [DataInfoViewModel]?, titleText: String?, error: Error?) {
         
-    }    
+    }
+}
+//MARK:- For showing Activity Indicator
+extension HomeViewController{
+    func showActivityIndicator() {
+        if #available(iOS 13.0, *) {
+            activity = UIActivityIndicatorView(style: .large)
+        } else {
+            // Fallback on earlier versions
+            activity = UIActivityIndicatorView(style: .whiteLarge)
+        }
+        activity.center = view.center
+        activity.color = .red
+        activity.hidesWhenStopped = true
+        view.addSubview(activity)
+        activity.startAnimating()
+    }
+    
+    func hideActivity() {
+        activity.stopAnimating()
+    }
 }
