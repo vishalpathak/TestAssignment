@@ -45,7 +45,32 @@ class HomeInfoTableViewCell: UITableViewCell {
            return imgLabel
        }()
        
-    
+     //MARK:- ViewModel Object set data to UI object using ViewModel
+    var dataInfoModel: DataInfoViewModel? {
+        didSet{
+            titleLable.text = "\(CommonText.CommonTitle) \(dataInfoModel?.title ?? DefaultStrings.DefaultTitle)"
+            descriptionLabel.text = "\(CommonText.CommonDescription) \(dataInfoModel?.description ?? DefaultStrings.DefaultDescription)"
+            
+            if let imageInfo = self.infoImage{
+                guard let str = dataInfoModel?.imageInfo else {return}
+                guard let url = URL(string: str) else {
+                    imageInfo.image = nil
+                    imageInfoLabel.text = "\(DefaultStrings.DefaultImageNotAvailable)"
+                    return
+                }
+                imageInfo.kf.indicatorType = .activity
+                let resource = ImageResource(downloadURL: url, cacheKey: dataInfoModel?.imageInfo ?? "")
+                imageInfo.kf.setImage(with: resource, placeholder: UIImage(named: "placeholder_image"), options: nil, progressBlock: nil) { (result) in
+                    switch result{
+                    case .success( _):
+                        self.imageInfoLabel.text = "\(CommonText.CommonImageInfo)"
+                    case .failure( _):
+                        self.imageInfoLabel.text = "\(DefaultStrings.DefaultImageNotAvailable)"
+                    }
+                }
+            }
+        }
+    }
     //MARK:- Table View Cell UI added
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
