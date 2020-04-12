@@ -20,3 +20,27 @@ struct DataInfoViewModel {
         self.imageInfo = dataInfo.imageHref ?? ""
     }
 }
+
+protocol DataReceivedDelegate: class {
+    func didGetDataFromAPI(rowViewModel: [DataInfoViewModel]?, titleText: String?, error: Error?)
+}
+
+class DataInfoVM {
+    weak var dataReceivedDelegate: DataReceivedDelegate?
+    
+    func fetchDataFromApi(urlAPI: String){
+        NetworkApiManager.sharedNetworkApiManager.getDataFromUrl(urlAPI) { (dt: DataInfo?, err: Error?) in
+            if let error = err{
+                self.dataReceivedDelegate?.didGetDataFromAPI(rowViewModel: nil, titleText: nil, error: error)
+                return
+            }
+            if let data = dt{
+                //Map DataModel Object to DataViewModel object
+                let arrayViewModel = data.rows.map({ (rowObj: RowInfo) -> DataInfoViewModel in
+                    return DataInfoViewModel(dataInfo: rowObj)
+                })
+                self.dataReceivedDelegate?.didGetDataFromAPI(rowViewModel: arrayViewModel, titleText: data.title, error: nil)
+            }
+        }
+    }
+}
