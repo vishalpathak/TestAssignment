@@ -12,14 +12,14 @@ class HomeViewController: UIViewController {
     //MARK:- UI Compenents
     fileprivate let cellId = "cellId"
     fileprivate lazy var tableInfoList: UITableView = {
-       let tb = UITableView()
+        let tb = UITableView()
         tb.delegate = self
         tb.dataSource = self
         tb.translatesAutoresizingMaskIntoConstraints = false
         tb.register(HomeInfoTableViewCell.self, forCellReuseIdentifier: cellId)
         return tb
     }()
-
+    
     var activity = UIActivityIndicatorView()
     
     //MARK:- Data Variables
@@ -30,54 +30,61 @@ class HomeViewController: UIViewController {
     //MARK:- View Life cycle functions
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setUpUIForViews()
         fetchDataFromAPI()
-
     }
     
     //MARK:- Set UI for views
     func setUpUIForViews() -> Void {
         let refresh = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.refresh, target: self, action: #selector(fetchDataFromAPI))
         self.navigationItem.rightBarButtonItem  = refresh
-    
+        
         view.backgroundColor = .white
         view.addSubview(tableInfoList)
         
         let views = ["table":self.tableInfoList]
-
+        
         var constraints =  NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[table]-0-|", options: NSLayoutConstraint.FormatOptions.alignAllTop, metrics: nil, views: views)
         self.view.addConstraints(constraints)
-
+        
         let stringConstraint = "V:|-0-[table]-0-|"
-
+        
         constraints =  NSLayoutConstraint.constraints(withVisualFormat: stringConstraint, options: NSLayoutConstraint.FormatOptions.alignAllCenterX, metrics: nil, views: views)
         self.view.addConstraints(constraints)
     }
     //MARK:- Fetch Data from API, assign to array, Delegate is called for 
     @objc func fetchDataFromAPI() {
-        let objData = DataInfoVM()
-        objData.dataReceivedDelegate = self
-        objData.fetchDataFromApi(urlAPI: BaseUrlPath)
+        if ReachabilityCheck.isConnectedToNetwork(){
+            showActivityIndicator()
+            let objData = DataInfoVM()
+            objData.dataReceivedDelegate = self
+            objData.fetchDataFromApi(urlAPI: BaseUrlPath)
+        }else{
+            UIAlertHelper.presentAlertOnController(self, title: AlertMessages.AlertTitle, message: AlertMessages.MessageInfo)
+        }
+    }
+    
+    func updateTableView(){
+        updateTable = true
+        tableInfoList.reloadData()
     }
 }
 //MARK:- TableView Functions
 extension HomeViewController:UITableViewDelegate,UITableViewDataSource{
-    
-   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return arrayInfoList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableInfoList.dequeueReusableCell(withIdentifier: cellId) as! HomeInfoTableViewCell
         let obj = arrayInfoList[indexPath.row]
-//        cell.dataInfoModel = obj
-//        if indexPath.row == arrayInfoList.count - 1 && updateTable == false{
-//            updateTableView()
-//        }
+        cell.dataInfoModel = obj
+        if indexPath.row == arrayInfoList.count - 1 && updateTable == false{
+            updateTableView()
+        }
         return cell
     }
-    
 }
 //MARK:- API data fetch function
 extension HomeViewController: DataReceivedDelegate{
@@ -86,7 +93,7 @@ extension HomeViewController: DataReceivedDelegate{
             fetchError = er
             DispatchQueue.main.async {
                 self.hideActivity()
-               // UIAlertHelper.presentAlertOnController(self, title: AlertMessages.AlertTitle, message: AlertMessages.CommonError)
+                UIAlertHelper.presentAlertOnController(self, title: AlertMessages.AlertTitle, message: AlertMessages.CommonError)
             }
             return
         }
