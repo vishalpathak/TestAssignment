@@ -53,6 +53,9 @@ class HomeViewController: UIViewController {
     }
     //MARK:- Fetch Data from API, assign to array, Delegate is called for 
     @objc func fetchDataFromAPI() {
+        let objData = DataInfoVM()
+        objData.dataReceivedDelegate = self
+        objData.fetchDataFromApi(urlAPI: BaseUrlPath)
     }
 }
 
@@ -72,4 +75,9 @@ extension HomeViewController:UITableViewDelegate,UITableViewDataSource{
         return cell
     }
     
+}
+extension HomeViewController: DataReceivedDelegate{
+    func didGetDataFromAPI(rowViewModel: [DataInfoViewModel]?, titleText: String?, error: Error?) {
+        
+    }    
 }
