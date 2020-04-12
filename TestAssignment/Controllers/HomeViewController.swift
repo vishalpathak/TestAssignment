@@ -30,7 +30,10 @@ class HomeViewController: UIViewController {
     //MARK:- View Life cycle functions
     override func viewDidLoad() {
         super.viewDidLoad()
+
         setUpUIForViews()
+        fetchDataFromAPI()
+
     }
     
     //MARK:- Set UI for views
@@ -79,7 +82,22 @@ extension HomeViewController:UITableViewDelegate,UITableViewDataSource{
 //MARK:- API data fetch function
 extension HomeViewController: DataReceivedDelegate{
     func didGetDataFromAPI(rowViewModel: [DataInfoViewModel]?, titleText: String?, error: Error?) {
-        
+        if let er = error{
+            fetchError = er
+            DispatchQueue.main.async {
+                self.hideActivity()
+               // UIAlertHelper.presentAlertOnController(self, title: AlertMessages.AlertTitle, message: AlertMessages.CommonError)
+            }
+            return
+        }
+        if let arrViewModel = rowViewModel{
+            arrayInfoList = arrViewModel
+            DispatchQueue.main.async {
+                self.tableInfoList.reloadData()
+                self.hideActivity()
+                self.navigationItem.title = titleText ?? DefaultStrings.DefaultNavigationTitle
+            }
+        }
     }
 }
 //MARK:- For showing Activity Indicator
